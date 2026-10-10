@@ -1,0 +1,11 @@
+pymupdf
+sentence-transformers
+open_clip_torch
+faiss-cpu
+google-genai
+fastapi
+uvicorn
+python-dotenv
+pillow
+numpy
+matplotlib
