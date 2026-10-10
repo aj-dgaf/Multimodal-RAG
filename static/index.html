@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multimodal RAG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #F6FFE9;
@@ -16,20 +17,431 @@
             --font-heading: "SS Default Lingo", "Astrid Grotesk", "Inter", system-ui, sans-serif;
             --font-ui: "Astrid Grotesk", "Inter", system-ui, sans-serif;
         }
-        body {
-            background-color: var(--bg);
-            color: var(--ink);
-            font-family: var(--font-ui);
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            font-family: var(--font-heading);
-        }
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); margin: 0; padding: 20px; line-height: 1.5; }
+        .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        h1, h2, h3, h4 { font-family: var(--font-heading); margin-top: 0; color: var(--primary); }
+        h1 { font-size: 2.5rem; margin-bottom: 5px; }
+        .subtitle { font-size: 1.1rem; margin-top: 0; margin-bottom: 20px; opacity: 0.9; }
+        
+        button, input { font-family: inherit; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; }
+        button { background: var(--primary); color: var(--bg); cursor: pointer; border: none; font-weight: 600; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        button:focus-visible, input:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+        
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(202, 197, 229, 0.25); }
+        
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { background: var(--border); color: var(--primary); padding: 4px 12px; border-radius: 16px; font-size: 0.85rem; font-weight: 600; }
+        .chip.example { background: var(--highlight); cursor: pointer; transition: transform 0.1s; }
+        .chip.example:hover { transform: translateY(-1px); }
+        
+        .ask-bar { display: flex; gap: 10px; margin-bottom: 12px; }
+        .ask-bar input { flex: 1; border: 2px solid var(--border); }
+        .ask-bar input:focus { border-color: var(--primary); }
+        
+        .mode-toggle { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
+        .mode-toggle label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; }
+        .mode-toggle input { cursor: pointer; accent-color: var(--primary); }
+        
+        .citation-pill { background: var(--accent); color: var(--surface); border-radius: 12px; padding: 2px 8px; font-size: 0.85rem; cursor: pointer; margin: 0 2px; display: inline-block; font-variant-numeric: tabular-nums; font-weight: bold; }
+        .citation-pill:hover { opacity: 0.8; }
+        
+        .not-found { background: var(--highlight); color: var(--ink); padding: 16px; border-radius: 8px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
+        
+        .tabs { display: flex; gap: 20px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+        .tab { padding: 8px 4px; cursor: pointer; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .evidence-item { padding: 16px; border-bottom: 1px solid var(--border); scroll-margin-top: 20px; }
+        .evidence-item:last-child { border-bottom: none; }
+        .evidence-item.highlighted { background-color: var(--highlight); border-radius: 8px; transition: background-color 0.5s; }
+        .evidence-meta { font-weight: 600; margin-bottom: 8px; color: var(--primary); font-size: 0.9rem; }
+        .evidence-text { white-space: pre-wrap; font-size: 0.95rem; }
+        
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+        .image-thumb { border-radius: 8px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.2s; background: var(--bg); }
+        .image-thumb:hover { transform: scale(1.02); }
+        .image-thumb img { width: 100%; height: 140px; object-fit: contain; padding: 10px; background: white; border-bottom: 1px solid var(--border); }
+        .image-thumb .label { padding: 8px; font-size: 0.8rem; text-align: center; font-weight: 600; color: var(--primary); }
+        
+        .md-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9rem; }
+        .md-table th, .md-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        .md-table th { background: var(--bg); font-weight: 600; color: var(--primary); }
+        
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 0, 135, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2rem; cursor: pointer; font-family: sans-serif; font-weight: bold; }
+        
+        .skeleton { display: none; }
+        .skeleton.active { display: block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 0.3; } 100% { opacity: 0.7; } }
+        .skeleton-line { height: 16px; background: var(--border); margin-bottom: 12px; border-radius: 4px; }
+        .skeleton-line:last-child { width: 70%; }
+        .skeleton-title { height: 24px; width: 30%; background: var(--border); margin-bottom: 20px; border-radius: 4px; }
+        
+        .compare-container { display: flex; gap: 24px; }
+        .compare-col { flex: 1; min-width: 0; }
+        @media (max-width: 768px) { .compare-container { flex-direction: column; } }
+        
+        .error-message { color: var(--accent); font-weight: bold; padding: 16px; border: 2px solid var(--accent); border-radius: 8px; margin-bottom: 16px; }
+        .latency { font-size: 0.8rem; color: #777; margin-top: 16px; text-align: right; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--primary); opacity: 0.6; }
+        
+        .footer { text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-top: 40px; opacity: 0.7; padding-bottom: 20px; }
+        
+        #results-area { display: none; }
     </style>
 </head>
 <body>
-    <h1>Multimodal RAG</h1>
-    <p>Coming soon...</p>
+    <div class="container">
+        <header>
+            <h1>Multimodal RAG</h1>
+            <p class="subtitle">An advanced retrieval-augmented generation system supporting text, tables, and images.</p>
+            <div class="chip-row" id="corpus-chips">
+                <!-- Loaded from API -->
+            </div>
+        </header>
+
+        <section class="card">
+            <div class="mode-toggle">
+                <label><input type="radio" name="mode" value="text" checked> Text-only</label>
+                <label><input type="radio" name="mode" value="text+tables"> Text + Tables</label>
+                <label><input type="radio" name="mode" value="multimodal"> Multimodal</label>
+                <label><input type="radio" name="mode" value="compare"> Compare (Text vs Multimodal)</label>
+            </div>
+            
+            <div class="ask-bar">
+                <input type="text" id="question-input" placeholder="Ask a question about the documents..." autocomplete="off">
+                <button id="ask-btn">Ask</button>
+            </div>
+            
+            <div class="chip-row">
+                <div class="chip example" onclick="fillQ('What is the standalone revenue from operations for Infosys in 2026?')">Infosys standalone revenue 2026?</div>
+                <div class="chip example" onclick="fillQ('Show me a diagram of the maestro edge engine.')">Diagram of maestro edge engine</div>
+                <div class="chip example" onclick="fillQ('What are the key financial highlights for Q1?')">Key financial highlights Q1</div>
+                <div class="chip example" onclick="fillQ('What is the capital of Mars?')">Capital of Mars?</div>
+            </div>
+        </section>
+
+        <!-- Skeleton Loader -->
+        <section class="card skeleton" id="skeleton-loader">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+        </section>
+
+        <!-- Results Area -->
+        <div id="results-area">
+            <!-- Normal Single Response -->
+            <div id="single-response" style="display: none;">
+                <section class="card" style="margin-bottom: 20px;">
+                    <h2>Answer</h2>
+                    <div id="single-answer-content"></div>
+                </section>
+                
+                <section class="card">
+                    <h2>Evidence</h2>
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('single', 'texts')">Text (<span id="single-count-texts">0</span>)</div>
+                        <div class="tab" onclick="switchTab('single', 'tables')">Tables (<span id="single-count-tables">0</span>)</div>
+                        <div class="tab" onclick="switchTab('single', 'images')">Images (<span id="single-count-images">0</span>)</div>
+                    </div>
+                    <div id="single-tab-texts" class="tab-content active"></div>
+                    <div id="single-tab-tables" class="tab-content"></div>
+                    <div id="single-tab-images" class="tab-content">
+                        <div class="image-grid" id="single-image-grid"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Compare Response -->
+            <div id="compare-response" class="compare-container" style="display: none;">
+                <!-- Col 1: Text-only -->
+                <div class="compare-col">
+                    <section class="card" style="margin-bottom: 20px;">
+                        <h3>Text-only</h3>
+                        <div id="compare-text-answer"></div>
+                    </section>
+                    <section class="card">
+                        <h4>Evidence (Text)</h4>
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchTab('c1', 'texts')">Text (<span id="c1-count-texts">0</span>)</div>
+                        </div>
+                        <div id="c1-tab-texts" class="tab-content active"></div>
+                    </section>
+                </div>
+                
+                <!-- Col 2: Multimodal -->
+                <div class="compare-col">
+                    <section class="card" style="margin-bottom: 20px;">
+                        <h3>Multimodal</h3>
+                        <div id="compare-multi-answer"></div>
+                    </section>
+                    <section class="card">
+                        <h4>Evidence (Multimodal)</h4>
+                        <div class="tabs">
+                            <div class="tab active" onclick="switchTab('c2', 'texts')">Text (<span id="c2-count-texts">0</span>)</div>
+                            <div class="tab" onclick="switchTab('c2', 'tables')">Tables (<span id="c2-count-tables">0</span>)</div>
+                            <div class="tab" onclick="switchTab('c2', 'images')">Images (<span id="c2-count-images">0</span>)</div>
+                        </div>
+                        <div id="c2-tab-texts" class="tab-content active"></div>
+                        <div id="c2-tab-tables" class="tab-content"></div>
+                        <div id="c2-tab-images" class="tab-content">
+                            <div class="image-grid" id="c2-image-grid"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by Gemini • Antigravity
+        </div>
+    </div>
+
+    <!-- Lightbox for images -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-close">&times;</div>
+        <img id="lightbox-img" src="" alt="Full size" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        // Load corpus chips on load
+        fetch('/api/docs')
+            .then(r => r.json())
+            .then(data => {
+                const row = document.getElementById('corpus-chips');
+                if (data.docs) {
+                    data.docs.forEach(doc => {
+                        const d = document.createElement('div');
+                        d.className = 'chip';
+                        d.textContent = doc;
+                        row.appendChild(d);
+                    });
+                }
+            })
+            .catch(e => console.error("Could not load docs", e));
+
+        function fillQ(q) {
+            document.getElementById('question-input').value = q;
+            document.getElementById('ask-btn').click();
+        }
+
+        document.getElementById('question-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('ask-btn').click();
+            }
+        });
+
+        function parseMarkdownTable(md) {
+            if (!md) return "";
+            let rows = md.trim().split("\n");
+            let html = "<table class='md-table'>";
+            let isHeader = true;
+            for (let r of rows) {
+                if (r.indexOf("---") > -1) { isHeader = false; continue; }
+                let cells = r.split("|").filter(c => c.trim() !== "");
+                if (cells.length === 0) continue;
+                let tag = isHeader ? "th" : "td";
+                html += "<tr>" + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join("") + "</tr>";
+            }
+            html += "</table>";
+            return html;
+        }
+
+        function formatCitations(text, citations) {
+            if (!text) return "";
+            let out = text;
+            // Highlight citations like [E1], [E2]
+            const regex = /\[(E\d+)\]/g;
+            out = out.replace(regex, (match, eid) => {
+                // Only link if it's in the valid citations list
+                const isValid = citations.some(c => c.id === eid);
+                if (isValid) {
+                    return `<span class="citation-pill" onclick="scrollToEvidence('${eid}')">${eid}</span>`;
+                }
+                return match;
+            });
+            return out;
+        }
+
+        function renderAnswerCard(containerId, data) {
+            const el = document.getElementById(containerId);
+            if (!data.answer_found) {
+                el.innerHTML = `<div class="not-found">Not found in the documents</div><p>${data.answer}</p><div class="latency">Latency: ${data.latency_ms} ms</div>`;
+            } else {
+                let ansHtml = `<p>${formatCitations(data.answer, data.citations)}</p>`;
+                if (data.citations.length > 0) {
+                    ansHtml += `<div>Citations: `;
+                    data.citations.forEach(c => {
+                        ansHtml += `<span class="citation-pill" onclick="scrollToEvidence('${c.id}')">${c.id}</span> `;
+                    });
+                    ansHtml += `</div>`;
+                }
+                ansHtml += `<div class="latency">Latency: ${data.latency_ms} ms</div>`;
+                el.innerHTML = ansHtml;
+            }
+        }
+
+        function renderEvidenceTabs(prefix, ev) {
+            // Texts
+            document.getElementById(`${prefix}-count-texts`).textContent = ev.texts.length;
+            const textDiv = document.getElementById(`${prefix}-tab-texts`);
+            textDiv.innerHTML = ev.texts.map(t => 
+                `<div class="evidence-item" id="ev-${t.id}">
+                    <div class="evidence-meta">[${t.id}] ${t.doc} (Page ${t.page}) — Score: ${t.score}</div>
+                    <div class="evidence-text">${t.text}</div>
+                </div>`
+            ).join('');
+
+            // Tables
+            if (document.getElementById(`${prefix}-count-tables`)) {
+                document.getElementById(`${prefix}-count-tables`).textContent = ev.tables.length;
+                const tabDiv = document.getElementById(`${prefix}-tab-tables`);
+                tabDiv.innerHTML = ev.tables.map(t => 
+                    `<div class="evidence-item" id="ev-${t.id}">
+                        <div class="evidence-meta">[${t.id}] ${t.doc} (Page ${t.page}) — Score: ${t.score}</div>
+                        ${parseMarkdownTable(t.markdown)}
+                    </div>`
+                ).join('');
+            }
+
+            // Images
+            if (document.getElementById(`${prefix}-count-images`)) {
+                document.getElementById(`${prefix}-count-images`).textContent = ev.images.length;
+                const imgDiv = document.getElementById(`${prefix}-image-grid`);
+                imgDiv.innerHTML = ev.images.map(img => 
+                    `<div class="image-thumb" id="ev-${img.id}" onclick="openLightbox('${img.url}')">
+                        <img src="${img.url}" loading="lazy">
+                        <div class="label">[${img.id}] p.${img.page}</div>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        function switchTab(prefix, tabName) {
+            const section = document.getElementById(`${prefix}-tab-${tabName}`).parentElement;
+            // Remove active from tabs
+            section.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            // Remove active from content
+            section.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active to clicked tab
+            event.currentTarget.classList.add('active');
+            document.getElementById(`${prefix}-tab-${tabName}`).classList.add('active');
+        }
+
+        function scrollToEvidence(eid) {
+            const el = document.getElementById(`ev-${eid}`);
+            if (el) {
+                // If it's in a hidden tab, we need to show the tab first.
+                // Find parent tab-content
+                const tabContent = el.closest('.tab-content');
+                if (tabContent && !tabContent.classList.contains('active')) {
+                    const section = tabContent.parentElement;
+                    section.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    section.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    tabContent.classList.add('active');
+                    // Guess the tab ID based on content ID
+                    const tabId = tabContent.id.split('-').pop(); 
+                    const prefix = tabContent.id.split('-')[0];
+                    // The matching tab header is a bit tricky to find robustly without IDs, 
+                    // we'll just activate the nth tab matching the index of this tab content.
+                    const contents = Array.from(section.querySelectorAll('.tab-content'));
+                    const idx = contents.indexOf(tabContent);
+                    const tabs = section.querySelectorAll('.tab');
+                    if (tabs[idx]) tabs[idx].classList.add('active');
+                }
+                
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('highlighted');
+                setTimeout(() => el.classList.remove('highlighted'), 2000);
+            }
+        }
+
+        function openLightbox(url) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.getElementById('lightbox-img').src = "";
+        }
+
+        document.getElementById('ask-btn').addEventListener('click', async () => {
+            const q = document.getElementById('question-input').value.trim();
+            if (!q) return;
+            
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            
+            document.getElementById('results-area').style.display = 'none';
+            document.getElementById('single-response').style.display = 'none';
+            document.getElementById('compare-response').style.display = 'none';
+            document.getElementById('skeleton-loader').classList.add('active');
+            
+            try {
+                if (mode === 'compare') {
+                    // Fetch both in parallel
+                    const [resText, resMulti] = await Promise.all([
+                        fetch('/api/ask', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({question: q, mode: 'text'})
+                        }).then(r => r.json()),
+                        fetch('/api/ask', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({question: q, mode: 'multimodal'})
+                        }).then(r => r.json())
+                    ]);
+                    
+                    document.getElementById('skeleton-loader').classList.remove('active');
+                    document.getElementById('results-area').style.display = 'block';
+                    document.getElementById('compare-response').style.display = 'flex';
+                    
+                    if (resText.detail) throw new Error(resText.detail);
+                    if (resMulti.detail) throw new Error(resMulti.detail);
+                    
+                    renderAnswerCard('compare-text-answer', resText);
+                    renderEvidenceTabs('c1', resText.evidence);
+                    
+                    renderAnswerCard('compare-multi-answer', resMulti);
+                    renderEvidenceTabs('c2', resMulti.evidence);
+                    
+                } else {
+                    const r = await fetch('/api/ask', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({question: q, mode: mode})
+                    });
+                    const res = await r.json();
+                    
+                    document.getElementById('skeleton-loader').classList.remove('active');
+                    if (!r.ok) {
+                        document.getElementById('results-area').style.display = 'block';
+                        document.getElementById('single-response').style.display = 'block';
+                        document.getElementById('single-answer-content').innerHTML = `<div class="error-message">${res.detail || "Server error"}</div>`;
+                        return;
+                    }
+                    
+                    document.getElementById('results-area').style.display = 'block';
+                    document.getElementById('single-response').style.display = 'block';
+                    
+                    renderAnswerCard('single-answer-content', res);
+                    renderEvidenceTabs('single', res.evidence);
+                }
+            } catch (e) {
+                document.getElementById('skeleton-loader').classList.remove('active');
+                alert("An error occurred: " + e.message);
+            }
+        });
+    </script>
 </body>
 </html>
