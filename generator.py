@@ -1,14 +1,12 @@
 """
-generator.py — Phase 1: Text-only generation
+generator.py — Phase 3: Multimodal generation
 
-Retrieves evidence via retriever.py, builds a grounded prompt, calls
-Gemini (temperature 0, JSON schema output), validates citations, and
-caches responses.
-
-Phase 3 will extend this to support multimodal evidence (images).
+Retrieves evidence via retriever.py, builds a grounded multimodal prompt,
+calls Gemini (temperature 0, JSON schema output), validates citations,
+and caches responses.
 
 Usage:
-    python generator.py "What is Infosys revenue?" --mode text
+    python generator.py "What is Infosys revenue?" --mode multimodal
 """
 
 import argparse
@@ -26,18 +24,13 @@ import retriever
 load_dotenv()
 
 
-# --- 1. Gemini client ---
-
 def _get_client() -> genai.Client:
-    """Create a Gemini API client from the environment key."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         print("ERROR: GEMINI_API_KEY not found. Create a .env file with your key.")
         raise SystemExit(1)
     return genai.Client(api_key=key)
 
-
-# --- 2. Build the prompt ---
 
 SYSTEM_INSTRUCTION = (
     "You are a document QA assistant. Answer ONLY from the evidence provided below. "
@@ -61,26 +54,47 @@ ANSWER_SCHEMA = {
 }
 
 
-def _build_prompt(question: str, evidence: dict) -> str:
-    """Build a text prompt from retrieved evidence."""
-    parts = [SYSTEM_INSTRUCTION, "", "--- EVIDENCE ---"]
+def _build_prompt_contents(question: str, evidence: dict) -> list:
+    """Build a multimodal prompt from retrieved evidence."""
+    contents = [SYSTEM_INSTRUCTION, "", "--- EVIDENCE ---"]
 
-    for item in evidence["texts"]:
+    # Add text and table evidence
+    for item in evidence.get("texts", []) + evidence.get("tables", []):
         eid = item["evidence_id"]
         doc = item["doc"]
         page = item["page"]
         etype = item["type"]
         text = item["text"]
-        parts.append(f"\n[{eid}] ({etype}) {doc} · p.{page}:\n{text}")
+        contents.append(f"\n[{eid}] ({etype}) {doc} · p.{page}:\n{text}")
 
-    parts.append(f"\n--- QUESTION ---\n{question}")
-    return "\n".join(parts)
+    # Add image evidence
+    for item in evidence.get("images", []):
+        eid = item["evidence_id"]
+        doc = item["doc"]
+        page = item["page"]
+        caption = item.get("caption", "")
+        
+        # Text prefix for the image
+        prefix = f"\nImage {eid} ({doc}, page {page})"
+        if caption:
+            prefix += f" Caption: {caption}"
+        prefix += ":"
+        contents.append(prefix)
+        
+        # Read image bytes
+        img_path = config.BASE_DIR / item["path"]
+        with open(img_path, "rb") as f:
+            img_bytes = f.read()
+            
+        contents.append(
+            types.Part.from_bytes(data=img_bytes, mime_type="image/png")
+        )
 
+    contents.append(f"\n--- QUESTION ---\n{question}")
+    return contents
 
-# --- 3. Cache ---
 
 def _load_cache() -> dict:
-    """Load the answer cache from disk."""
     if config.CACHE_PATH.exists():
         with open(config.CACHE_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -88,27 +102,22 @@ def _load_cache() -> dict:
 
 
 def _save_cache(cache: dict) -> None:
-    """Save the answer cache to disk."""
     config.CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(config.CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=1)
 
 
 def _cache_key(question: str, mode: str) -> str:
-    """Normalised cache key: lowercase, stripped, mode-prefixed."""
     return f"{mode}::{question.strip().lower()}"
 
 
-# --- 4. Call Gemini with retry ---
-
-def _call_gemini(client: genai.Client, prompt: str) -> dict:
-    """Call Gemini with retry on transient errors. Returns parsed JSON."""
+def _call_gemini(client: genai.Client, contents: list) -> dict:
     last_error = None
     for attempt in range(config.MAX_RETRIES):
         try:
             resp = client.models.generate_content(
                 model=config.GEMINI_MODEL,
-                contents=[prompt],
+                contents=contents,
                 config=types.GenerateContentConfig(
                     temperature=0,
                     response_mime_type="application/json",
@@ -119,7 +128,6 @@ def _call_gemini(client: genai.Client, prompt: str) -> dict:
         except Exception as e:
             last_error = e
             error_str = str(e)
-            # Retry on rate limit or server errors
             if "429" in error_str or "5" in error_str[:1]:
                 wait = config.RETRY_BACKOFF_FACTOR ** attempt
                 print(f"  Retry {attempt + 1}/{config.MAX_RETRIES} in {wait}s: {e}")
@@ -129,20 +137,13 @@ def _call_gemini(client: genai.Client, prompt: str) -> dict:
     raise last_error
 
 
-# --- 5. Validate citations ---
-
 def _validate_citations(result: dict, evidence_ids: set) -> dict:
-    """Drop citation IDs that are not in the provided evidence."""
     valid = [c for c in result.get("citations", []) if c in evidence_ids]
     result["citations"] = valid
     return result
 
 
-# --- 6. Generate answer ---
-
 def generate(question: str, mode: str = "text") -> dict:
-    """Full pipeline: retrieve, build prompt, call Gemini, validate, cache."""
-    # Check cache
     cache = _load_cache()
     key = _cache_key(question, mode)
     if key in cache:
@@ -151,8 +152,10 @@ def generate(question: str, mode: str = "text") -> dict:
         cached["from_cache"] = True
         return cached
 
-    # Retrieve evidence
     evidence = retriever.search(question, mode=mode)
+
+    # Convert all evidence lists into a flat list of dicts to extract EIDs
+    all_evidence_items = evidence.get("texts", []) + evidence.get("tables", []) + evidence.get("images", [])
 
     if evidence["insufficient"]:
         result = {
@@ -166,48 +169,55 @@ def generate(question: str, mode: str = "text") -> dict:
         _save_cache(cache)
         return result
 
-    # Build prompt and call Gemini
-    prompt = _build_prompt(question, evidence)
+    contents = _build_prompt_contents(question, evidence)
     client = _get_client()
 
     start = time.time()
-    result = _call_gemini(client, prompt)
+    try:
+        result = _call_gemini(client, contents)
+    except Exception as e:
+        # Robustness: return evidence with friendly message
+        print(f"  API Error: {e}")
+        return {
+            "answer": f"Error calling Gemini: {e}",
+            "answer_found": False,
+            "citations": [],
+            "evidence": evidence,
+            "from_cache": False
+        }
+        
     latency_ms = int((time.time() - start) * 1000)
 
-    # Validate citations
-    evidence_ids = {item["evidence_id"] for item in evidence["texts"]}
+    evidence_ids = {item["evidence_id"] for item in all_evidence_items}
     result = _validate_citations(result, evidence_ids)
 
-    # If answer_found but no valid citations, retry once
     if result.get("answer_found") and not result["citations"]:
         print("  No valid citations found, retrying once...")
-        result = _call_gemini(client, prompt)
-        result = _validate_citations(result, evidence_ids)
-        if result.get("answer_found") and not result["citations"]:
-            result["answer"] += " [unverified: no valid citation]"
+        try:
+            result = _call_gemini(client, contents)
+            result = _validate_citations(result, evidence_ids)
+            if result.get("answer_found") and not result["citations"]:
+                result["answer"] += " [unverified: no valid citation]"
+        except Exception as e:
+            print(f"  Retry API Error: {e}")
 
     result["evidence"] = evidence
     result["latency_ms"] = latency_ms
     result["from_cache"] = False
 
-    # Save to cache
     cache[key] = result
     _save_cache(cache)
 
     return result
 
 
-# --- 7. CLI ---
-
 def main() -> None:
-    """CLI entry point for testing generation."""
     parser = argparse.ArgumentParser(description="Ask a question over your PDFs")
     parser.add_argument("question", help="The question to ask")
     parser.add_argument(
         "--mode", default="text", choices=["text", "text+tables", "multimodal"],
         help="Retrieval mode (default: text)"
     )
-    # Windows consoles default to cp1252 which can't print ₹, © etc.
     import sys
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -218,20 +228,27 @@ def main() -> None:
 
     result = generate(args.question, mode=args.mode)
 
-    print(f"\nAnswer: {result['answer']}")
-    print(f"Found: {result['answer_found']}")
-    print(f"Citations: {result['citations']}")
+    print(f"\nAnswer: {result.get('answer', '')}")
+    print(f"Found: {result.get('answer_found', False)}")
+    print(f"Citations: {result.get('citations', [])}")
     if "latency_ms" in result:
         print(f"Latency: {result['latency_ms']} ms")
 
-    # Show evidence summary
     ev = result.get("evidence", {})
-    for item in ev.get("texts", []):
-        doc = item["doc"]
-        page = item["page"]
-        score = item["score"]
-        eid = item["evidence_id"]
-        print(f"  {eid}: {doc} p.{page} (score={score})")
+    all_ev = ev.get("texts", []) + ev.get("tables", []) + ev.get("images", [])
+    
+    # Sort evidence to display E1, E2, ... in order
+    all_ev.sort(key=lambda x: int(x["evidence_id"][1:]))
+    
+    if all_ev:
+        print("\n--- Evidence ---")
+        for item in all_ev:
+            doc = item["doc"]
+            page = item["page"]
+            score = item["score"]
+            eid = item["evidence_id"]
+            etype = item["type"]
+            print(f"  {eid} ({etype}): {doc} p.{page} (score={score})")
 
 
 if __name__ == "__main__":
