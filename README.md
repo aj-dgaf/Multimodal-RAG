@@ -1,7 +1,5 @@
 # Multimodal RAG: Retrieval-Augmented Generation over Text, Tables and Images
 
-**Student:** Anusha Jain (C219) · NLP Mini Project
-
 A RAG system that parses PDFs into text chunks, tables (as markdown) and images; embeds text/tables with a sentence-transformer and images with CLIP; retrieves across all three modalities; and gives the evidence (text **and** images) to a vision-capable LLM (Gemini) that returns a **grounded answer with source document and page citations**, or says the answer is not in the documents.
 
 **Core technical idea:** CLIP embeds text and images into the **same vector space**, so a text query can be matched directly to images without captioning.
@@ -182,12 +180,4 @@ Correct answers by question type (out of 10 each):
 
 ---
 
-## Website Screenshots
 
-*(Add screenshots of the web UI here)*
-
----
-
-## Credits
-
-Fonts: SS Default Lingo (Typocracy Studio), Astrid Grotesk (Schizotype / Eclectotype).
