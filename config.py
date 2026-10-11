@@ -1,4 +1,12 @@
-import os
+"""
+config.py — Central configuration
+
+Every setting (paths, model names, thresholds, chunk sizes, device) lives here.
+No magic numbers elsewhere in the codebase.
+
+Not run directly; imported by all other modules.
+"""
+
 import torch
 from pathlib import Path
 
@@ -16,7 +24,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 TEXT_EMBED_MODEL = "BAAI/bge-small-en-v1.5"
 CLIP_MODEL = "ViT-B-32"
 CLIP_PRETRAINED = "laion2b_s34b_b79k"
-GEMINI_MODEL = "gemini-3.8-flash"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 # Retrieval & Chunking
 CHUNK_SIZE = 200
@@ -39,3 +47,6 @@ IMAGE_SCORE_THRESHOLD = 0.2
 # Retry Settings
 MAX_RETRIES = 3
 RETRY_BACKOFF_FACTOR = 2
+
+# Evaluation pacing: seconds before each Gemini call (free tier allows 15 requests/minute)
+EVAL_CALL_DELAY = 5

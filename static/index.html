@@ -4,444 +4,465 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multimodal RAG</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- 1. Palette and fonts --- */
         :root {
-            --bg: #F6FFE9;
+            --white-smoke: #F5F5F4;     /* page background */
+            --lavender: #E5DBE6;        /* borders, hover, soft surfaces */
+            --taupe: #BBA0A0;           /* citations, "not found" notice, highlights */
+            --periwinkle: #7D80DA;      /* primary actions, active states, focus */
+            --grape: #55418B;           /* sidebar, user messages, headings */
+            --ink: #33265A;             /* body text: a darker Dusty Grape for contrast */
             --surface: #FFFFFF;
-            --border: #CAC5E5;
-            --ink: #290087;
-            --primary: #290087;
-            --accent: #A230A4;
-            --highlight: #F2E0A4;
             --font-heading: "SS Default Lingo", "Astrid Grotesk", "Inter", system-ui, sans-serif;
             --font-ui: "Astrid Grotesk", "Inter", system-ui, sans-serif;
         }
+
+        /* --- 2. Page shell --- */
         * { box-sizing: border-box; }
-        body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); margin: 0; padding: 20px; line-height: 1.5; }
-        .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-        h1, h2, h3, h4 { font-family: var(--font-heading); margin-top: 0; color: var(--primary); }
-        h1 { font-size: 2.5rem; margin-bottom: 5px; }
-        .subtitle { font-size: 1.1rem; margin-top: 0; margin-bottom: 20px; opacity: 0.9; }
-        
-        button, input { font-family: inherit; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; }
-        button { background: var(--primary); color: var(--bg); cursor: pointer; border: none; font-weight: 600; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        button:focus-visible, input:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
-        
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(202, 197, 229, 0.25); }
-        
-        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .chip { background: var(--border); color: var(--primary); padding: 4px 12px; border-radius: 16px; font-size: 0.85rem; font-weight: 600; }
-        .chip.example { background: var(--highlight); cursor: pointer; transition: transform 0.1s; }
-        .chip.example:hover { transform: translateY(-1px); }
-        
-        .ask-bar { display: flex; gap: 10px; margin-bottom: 12px; }
-        .ask-bar input { flex: 1; border: 2px solid var(--border); }
-        .ask-bar input:focus { border-color: var(--primary); }
-        
-        .mode-toggle { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
-        .mode-toggle label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; }
-        .mode-toggle input { cursor: pointer; accent-color: var(--primary); }
-        
-        .citation-pill { background: var(--accent); color: var(--surface); border-radius: 12px; padding: 2px 8px; font-size: 0.85rem; cursor: pointer; margin: 0 2px; display: inline-block; font-variant-numeric: tabular-nums; font-weight: bold; }
-        .citation-pill:hover { opacity: 0.8; }
-        
-        .not-found { background: var(--highlight); color: var(--ink); padding: 16px; border-radius: 8px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
-        
-        .tabs { display: flex; gap: 20px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
-        .tab { padding: 8px 4px; cursor: pointer; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-        .tab:hover { color: var(--primary); }
-        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .evidence-item { padding: 16px; border-bottom: 1px solid var(--border); scroll-margin-top: 20px; }
-        .evidence-item:last-child { border-bottom: none; }
-        .evidence-item.highlighted { background-color: var(--highlight); border-radius: 8px; transition: background-color 0.5s; }
-        .evidence-meta { font-weight: 600; margin-bottom: 8px; color: var(--primary); font-size: 0.9rem; }
-        .evidence-text { white-space: pre-wrap; font-size: 0.95rem; }
-        
-        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
-        .image-thumb { border-radius: 8px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.2s; background: var(--bg); }
-        .image-thumb:hover { transform: scale(1.02); }
-        .image-thumb img { width: 100%; height: 140px; object-fit: contain; padding: 10px; background: white; border-bottom: 1px solid var(--border); }
-        .image-thumb .label { padding: 8px; font-size: 0.8rem; text-align: center; font-weight: 600; color: var(--primary); }
-        
-        .md-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9rem; }
-        .md-table th, .md-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-        .md-table th { background: var(--bg); font-weight: 600; color: var(--primary); }
-        
-        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 0, 135, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .lightbox.active { display: flex; }
-        .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2rem; cursor: pointer; font-family: sans-serif; font-weight: bold; }
-        
-        .skeleton { display: none; }
-        .skeleton.active { display: block; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 0.3; } 100% { opacity: 0.7; } }
-        .skeleton-line { height: 16px; background: var(--border); margin-bottom: 12px; border-radius: 4px; }
-        .skeleton-line:last-child { width: 70%; }
-        .skeleton-title { height: 24px; width: 30%; background: var(--border); margin-bottom: 20px; border-radius: 4px; }
-        
-        .compare-container { display: flex; gap: 24px; }
-        .compare-col { flex: 1; min-width: 0; }
-        @media (max-width: 768px) { .compare-container { flex-direction: column; } }
-        
-        .error-message { color: var(--accent); font-weight: bold; padding: 16px; border: 2px solid var(--accent); border-radius: 8px; margin-bottom: 16px; }
-        .latency { font-size: 0.8rem; color: #777; margin-top: 16px; text-align: right; }
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--primary); opacity: 0.6; }
-        
-        .footer { text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-top: 40px; opacity: 0.7; padding-bottom: 20px; }
-        
-        #results-area { display: none; }
+        [hidden] { display: none !important; }
+        html, body { height: 100%; }
+        body { margin: 0; background: var(--white-smoke); color: var(--ink); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+        button, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+        :focus-visible { outline: 2px solid var(--periwinkle); outline-offset: 2px; }
+        .app { display: flex; height: 100vh; height: 100dvh; }
+
+        /* --- 3. Sidebar --- */
+        .sidebar { width: 272px; flex-shrink: 0; background: var(--grape); color: var(--white-smoke); display: flex; flex-direction: column; padding: 16px 12px; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px; font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; }
+        .star { width: 22px; height: 22px; flex-shrink: 0; fill: currentColor; }
+        .new-chat { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border-radius: 10px; background: var(--periwinkle); color: var(--surface); font-weight: 600; }
+        .new-chat:hover { filter: brightness(1.08); }
+        .sidebar :focus-visible { outline-color: var(--white-smoke); }
+        .side-label { padding: 0 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--taupe); }
+        .doc-list { flex: 1; overflow-y: auto; margin: -8px 0 0; padding: 0; list-style: none; }
+        .doc-list li { padding: 7px 8px; border-radius: 8px; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .doc-list li:hover { background: rgba(245, 245, 244, 0.1); }
+        .side-foot { padding: 12px 8px 0; border-top: 1px solid rgba(245, 245, 244, 0.18); font-size: 0.8rem; color: var(--lavender); }
+
+        /* --- 4. Main column --- */
+        .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .topbar { display: flex; align-items: center; gap: 10px; padding: 12px 20px; font-weight: 600; color: var(--grape); }
+        .menu-btn { display: none; width: 36px; height: 36px; border-radius: 8px; font-size: 1.3rem; line-height: 1; color: var(--grape); }
+        .menu-btn:hover { background: var(--lavender); }
+        .thread { flex: 1; overflow-y: auto; padding: 8px 20px 24px; }
+        .column { max-width: 780px; margin: 0 auto; }
+        .column.wide { max-width: 1080px; }
+
+        /* --- 5. Empty state --- */
+        .empty { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 0; }
+        .empty .star { width: 44px; height: 44px; color: var(--periwinkle); }
+        .empty h1 { margin: 16px 0 6px; font-family: var(--font-heading); font-size: 2rem; line-height: 1.2; color: var(--grape); text-wrap: balance; }
+        .empty p { margin: 0 0 28px; max-width: 520px; }
+        .examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 640px; }
+        .example { padding: 14px 16px; border: 1px solid var(--lavender); border-radius: 14px; background: var(--surface); text-align: left; font-size: 0.925rem; transition: border-color 0.15s, transform 0.15s; }
+        .example:hover { border-color: var(--periwinkle); transform: translateY(-1px); }
+        .example span { display: block; margin-bottom: 2px; font-size: 0.75rem; font-weight: 600; color: var(--periwinkle); }
+
+        /* --- 6. Messages --- */
+        .msg { margin-top: 24px; }
+        .msg.user { display: flex; justify-content: flex-end; }
+        .bubble { max-width: 80%; padding: 10px 16px; border-radius: 18px 18px 4px 18px; background: var(--grape); color: var(--white-smoke); white-space: pre-wrap; overflow-wrap: anywhere; }
+        .msg.bot { display: flex; gap: 12px; }
+        .avatar { width: 30px; height: 30px; flex-shrink: 0; margin-top: 2px; border-radius: 50%; background: var(--periwinkle); color: var(--surface); display: grid; place-items: center; }
+        .avatar .star { width: 16px; height: 16px; }
+        .bot-body { flex: 1; min-width: 0; }
+        .answer-text { margin: 0 0 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .compare-col { padding: 16px; border: 1px solid var(--lavender); border-radius: 14px; background: var(--surface); }
+        .compare-col h3 { margin: 0 0 8px; font-family: var(--font-heading); font-size: 1rem; color: var(--grape); }
+
+        .cite { display: inline-block; margin: 0 2px; padding: 0 7px; border-radius: 10px; background: var(--taupe); color: var(--ink); font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; vertical-align: 1px; }
+        .cite:hover { background: var(--periwinkle); color: var(--surface); }
+        .source-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .source-chip { padding: 3px 10px; border: 1px solid var(--taupe); border-radius: 12px; background: var(--surface); font-size: 0.8rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+        .source-chip:hover { border-color: var(--periwinkle); color: var(--periwinkle); }
+        .notice { display: inline-block; margin-bottom: 8px; padding: 6px 12px; border-radius: 10px; background: var(--taupe); color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+        .error { padding: 10px 14px; border: 1px solid var(--taupe); border-left: 4px solid var(--grape); border-radius: 10px; background: var(--surface); }
+        .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--grape); font-variant-numeric: tabular-nums; }
+        .sources-btn { padding: 4px 12px; border: 1px solid var(--lavender); border-radius: 14px; background: var(--surface); font-size: 0.8rem; font-weight: 600; color: var(--grape); }
+        .sources-btn:hover { border-color: var(--periwinkle); }
+
+        .typing { display: flex; gap: 5px; padding: 10px 0; }
+        .typing i { width: 8px; height: 8px; border-radius: 50%; background: var(--periwinkle); animation: blink 1.2s infinite; }
+        .typing i:nth-child(2) { animation-delay: 0.2s; }
+        .typing i:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+        /* --- 7. Sources panel (evidence) --- */
+        .sources { margin-top: 12px; border: 1px solid var(--lavender); border-radius: 14px; background: var(--surface); overflow: hidden; }
+        .tabs { display: flex; gap: 4px; padding: 8px; background: var(--white-smoke); border-bottom: 1px solid var(--lavender); }
+        .tab { padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--grape); }
+        .tab:hover { background: var(--lavender); }
+        .tab.active { background: var(--periwinkle); color: var(--surface); }
+        .tab-panel { display: none; max-height: 420px; overflow: auto; }
+        .tab-panel.active { display: block; }
+        .ev { padding: 14px 16px; border-bottom: 1px solid var(--lavender); transition: background-color 0.5s; }
+        .ev:last-child { border-bottom: none; }
+        .ev.flash, .thumb.flash { background: var(--taupe); }
+        .ev-meta { margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--grape); font-variant-numeric: tabular-nums; }
+        .ev-text { font-size: 0.9rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .ev-empty { padding: 16px; font-size: 0.9rem; color: var(--grape); }
+        .table-wrap { overflow-x: auto; }
+        .md-table { border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+        .md-table th, .md-table td { padding: 6px 10px; border: 1px solid var(--lavender); text-align: left; vertical-align: top; }
+        .md-table th { background: var(--white-smoke); color: var(--grape); }
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 16px; }
+        .thumb { padding: 0; border: 1px solid var(--lavender); border-radius: 10px; background: var(--surface); overflow: hidden; text-align: left; transition: background-color 0.5s, border-color 0.15s; }
+        .thumb:hover { border-color: var(--periwinkle); }
+        .thumb img { display: block; width: 100%; height: 130px; object-fit: contain; background: var(--white-smoke); }
+        .thumb div { padding: 6px 10px; font-size: 0.75rem; font-weight: 600; color: var(--grape); font-variant-numeric: tabular-nums; }
+
+        /* --- 8. Composer --- */
+        .composer-wrap { padding: 0 20px 14px; }
+        .composer { max-width: 780px; margin: 0 auto; padding: 12px 12px 10px 18px; border: 1px solid var(--lavender); border-radius: 24px; background: var(--surface); box-shadow: 0 6px 24px rgba(85, 65, 139, 0.10); }
+        .composer:focus-within { border-color: var(--periwinkle); }
+        .composer textarea { display: block; width: 100%; max-height: 160px; padding: 4px 0 8px; border: none; outline: none; resize: none; background: transparent; line-height: 1.5; }
+        .composer textarea::placeholder { color: var(--taupe); }
+        .composer-row { display: flex; align-items: center; gap: 8px; }
+        .modes { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; }
+        .mode { padding: 4px 12px; border: 1px solid var(--lavender); border-radius: 14px; font-size: 0.8rem; font-weight: 600; color: var(--grape); }
+        .mode:hover { border-color: var(--periwinkle); }
+        .mode.active { border-color: var(--periwinkle); background: var(--periwinkle); color: var(--surface); }
+        .send { width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: var(--grape); color: var(--surface); display: grid; place-items: center; }
+        .send:hover { background: var(--periwinkle); }
+        .send:disabled { background: var(--lavender); cursor: not-allowed; }
+        .send svg { width: 18px; height: 18px; }
+        .fineprint { margin: 8px 0 0; text-align: center; font-size: 0.75rem; color: var(--grape); }
+
+        /* --- 9. Lightbox --- */
+        .lightbox { display: none; position: fixed; inset: 0; z-index: 30; padding: 24px; background: rgba(51, 38, 90, 0.92); align-items: center; justify-content: center; }
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 10px; background: var(--surface); }
+        .lightbox button { position: absolute; top: 16px; right: 20px; width: 40px; height: 40px; border-radius: 50%; font-size: 1.6rem; line-height: 1; color: var(--white-smoke); }
+        .lightbox button:hover { background: rgba(245, 245, 244, 0.15); }
+
+        /* --- 10. Phone layout: the sidebar becomes a drawer --- */
+        .scrim { display: none; }
+        @media (max-width: 800px) {
+            .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 20; transform: translateX(-100%); transition: transform 0.2s; }
+            .app.drawer-open .sidebar { transform: none; }
+            .app.drawer-open .scrim { display: block; position: fixed; inset: 0; z-index: 10; background: rgba(51, 38, 90, 0.5); }
+            .menu-btn { display: block; }
+            .topbar, .thread, .composer-wrap { padding-left: 16px; padding-right: 16px; }
+            .examples, .compare { grid-template-columns: 1fr; }
+            .bubble { max-width: 90%; }
+            .empty h1 { font-size: 1.6rem; }
+        }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Multimodal RAG</h1>
-            <p class="subtitle">An advanced retrieval-augmented generation system supporting text, tables, and images.</p>
-            <div class="chip-row" id="corpus-chips">
-                <!-- Loaded from API -->
-            </div>
-        </header>
+    <!-- Four-point star used as the logo and assistant avatar -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="star" viewBox="0 0 24 24">
+            <path d="M12 0C12.8 7.5 16.5 11.2 24 12 16.5 12.8 12.8 16.5 12 24 11.2 16.5 7.5 12.8 0 12 7.5 11.2 11.2 7.5 12 0Z"/>
+        </symbol>
+    </svg>
 
-        <section class="card">
-            <div class="mode-toggle">
-                <label><input type="radio" name="mode" value="text" checked> Text-only</label>
-                <label><input type="radio" name="mode" value="text+tables"> Text + Tables</label>
-                <label><input type="radio" name="mode" value="multimodal"> Multimodal</label>
-                <label><input type="radio" name="mode" value="compare"> Compare (Text vs Multimodal)</label>
-            </div>
-            
-            <div class="ask-bar">
-                <input type="text" id="question-input" placeholder="Ask a question about the documents..." autocomplete="off">
-                <button id="ask-btn">Ask</button>
-            </div>
-            
-            <div class="chip-row">
-                <div class="chip example" onclick="fillQ('What is the standalone revenue from operations for Infosys in 2026?')">Infosys standalone revenue 2026?</div>
-                <div class="chip example" onclick="fillQ('Show me a diagram of the maestro edge engine.')">Diagram of maestro edge engine</div>
-                <div class="chip example" onclick="fillQ('What are the key financial highlights for Q1?')">Key financial highlights Q1</div>
-                <div class="chip example" onclick="fillQ('What is the capital of Mars?')">Capital of Mars?</div>
-            </div>
-        </section>
+    <div class="app" id="app">
+        <aside class="sidebar">
+            <div class="brand"><svg class="star"><use href="#star"/></svg>Multimodal RAG</div>
+            <button class="new-chat" id="new-chat">+ New chat</button>
+            <div class="side-label">Documents</div>
+            <ul class="doc-list" id="doc-list"></ul>
+            <div class="side-foot">Answers are grounded in these PDFs and generated by Gemini.</div>
+        </aside>
+        <div class="scrim" id="scrim"></div>
 
-        <!-- Skeleton Loader -->
-        <section class="card skeleton" id="skeleton-loader">
-            <div class="skeleton-title"></div>
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line"></div>
-        </section>
+        <main class="main">
+            <div class="topbar">
+                <button class="menu-btn" id="menu-btn" aria-label="Open document list">&#9776;</button>
+                <span>Ask your documents</span>
+            </div>
 
-        <!-- Results Area -->
-        <div id="results-area">
-            <!-- Normal Single Response -->
-            <div id="single-response" style="display: none;">
-                <section class="card" style="margin-bottom: 20px;">
-                    <h2>Answer</h2>
-                    <div id="single-answer-content"></div>
-                </section>
-                
-                <section class="card">
-                    <h2>Evidence</h2>
-                    <div class="tabs">
-                        <div class="tab active" onclick="switchTab('single', 'texts')">Text (<span id="single-count-texts">0</span>)</div>
-                        <div class="tab" onclick="switchTab('single', 'tables')">Tables (<span id="single-count-tables">0</span>)</div>
-                        <div class="tab" onclick="switchTab('single', 'images')">Images (<span id="single-count-images">0</span>)</div>
+            <div class="thread" id="thread">
+                <div class="column" id="column">
+                    <div class="empty" id="empty">
+                        <svg class="star"><use href="#star"/></svg>
+                        <h1>What would you like to know?</h1>
+                        <p>Ask about the annual reports, product manuals and textbook chapters. Every answer cites the page, table or figure it came from.</p>
+                        <div class="examples">
+                            <button class="example" data-q="What is the standalone revenue from operations for Infosys in 2026?"><span>Table</span>Infosys standalone revenue from operations in 2026</button>
+                            <button class="example" data-q="Show me a diagram of the maestro edge engine."><span>Figure</span>A diagram of the Maestro Edge engine</button>
+                            <button class="example" data-q="What are the key financial highlights for Q1?"><span>Text</span>Key financial highlights for Q1</button>
+                            <button class="example" data-q="What is the capital of Mars?"><span>Not in the documents</span>What is the capital of Mars?</button>
+                        </div>
                     </div>
-                    <div id="single-tab-texts" class="tab-content active"></div>
-                    <div id="single-tab-tables" class="tab-content"></div>
-                    <div id="single-tab-images" class="tab-content">
-                        <div class="image-grid" id="single-image-grid"></div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Compare Response -->
-            <div id="compare-response" class="compare-container" style="display: none;">
-                <!-- Col 1: Text-only -->
-                <div class="compare-col">
-                    <section class="card" style="margin-bottom: 20px;">
-                        <h3>Text-only</h3>
-                        <div id="compare-text-answer"></div>
-                    </section>
-                    <section class="card">
-                        <h4>Evidence (Text)</h4>
-                        <div class="tabs">
-                            <div class="tab active" onclick="switchTab('c1', 'texts')">Text (<span id="c1-count-texts">0</span>)</div>
-                        </div>
-                        <div id="c1-tab-texts" class="tab-content active"></div>
-                    </section>
-                </div>
-                
-                <!-- Col 2: Multimodal -->
-                <div class="compare-col">
-                    <section class="card" style="margin-bottom: 20px;">
-                        <h3>Multimodal</h3>
-                        <div id="compare-multi-answer"></div>
-                    </section>
-                    <section class="card">
-                        <h4>Evidence (Multimodal)</h4>
-                        <div class="tabs">
-                            <div class="tab active" onclick="switchTab('c2', 'texts')">Text (<span id="c2-count-texts">0</span>)</div>
-                            <div class="tab" onclick="switchTab('c2', 'tables')">Tables (<span id="c2-count-tables">0</span>)</div>
-                            <div class="tab" onclick="switchTab('c2', 'images')">Images (<span id="c2-count-images">0</span>)</div>
-                        </div>
-                        <div id="c2-tab-texts" class="tab-content active"></div>
-                        <div id="c2-tab-tables" class="tab-content"></div>
-                        <div id="c2-tab-images" class="tab-content">
-                            <div class="image-grid" id="c2-image-grid"></div>
-                        </div>
-                    </section>
                 </div>
             </div>
-        </div>
 
-        <div class="footer">
-            Powered by Gemini • Antigravity
-        </div>
+            <div class="composer-wrap">
+                <div class="composer">
+                    <textarea id="question" rows="1" maxlength="500" placeholder="Ask a question about the documents" aria-label="Question"></textarea>
+                    <div class="composer-row">
+                        <div class="modes" id="modes">
+                            <button class="mode" data-mode="text">Text only</button>
+                            <button class="mode" data-mode="text+tables">Text + Tables</button>
+                            <button class="mode active" data-mode="multimodal">Multimodal</button>
+                            <button class="mode" data-mode="compare">Compare</button>
+                        </div>
+                        <button class="send" id="send" aria-label="Send question">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <p class="fineprint">Check important figures against the cited page.</p>
+            </div>
+        </main>
     </div>
 
-    <!-- Lightbox for images -->
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <div class="lightbox-close">&times;</div>
-        <img id="lightbox-img" src="" alt="Full size" onclick="event.stopPropagation()">
+    <div class="lightbox" id="lightbox">
+        <button id="lightbox-close" aria-label="Close image">&times;</button>
+        <img id="lightbox-img" alt="Full-size evidence image">
     </div>
 
     <script>
-        // Load corpus chips on load
-        fetch('/api/docs')
+        // --- 1. State and element references ---
+        const MODE_LABELS = { "text": "Text only", "text+tables": "Text + Tables", "multimodal": "Multimodal" };
+        let currentMode = "multimodal";
+        let busy = false;
+        let messageCount = 0;   // gives every answer unique element ids
+
+        const app = document.getElementById("app");
+        const thread = document.getElementById("thread");
+        const column = document.getElementById("column");
+        const empty = document.getElementById("empty");
+        const input = document.getElementById("question");
+        const sendBtn = document.getElementById("send");
+        const lightbox = document.getElementById("lightbox");
+
+        // --- 2. Small helpers ---
+        function esc(value) {
+            // PDF text can contain < and &, so escape everything before inserting it as HTML
+            return String(value ?? "").replace(/[&<>"']/g, ch =>
+                ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+        }
+
+        function docName(doc) {
+            return esc(String(doc).replace(/\.pdf$/i, ""));
+        }
+
+        function markdownTableToHtml(md) {
+            let html = "<div class='table-wrap'><table class='md-table'>";
+            let header = true;
+            for (const row of md.trim().split("\n")) {
+                if (/^[\s|:-]+$/.test(row)) { header = false; continue; }   // the |---|---| separator row
+                const cells = row.replace(/^\s*\||\|\s*$/g, "").split("|");
+                const tag = header ? "th" : "td";
+                html += "<tr>" + cells.map(c => `<${tag}>${esc(c.trim()).replace(/&lt;br&gt;/g, "<br>")}</${tag}>`).join("") + "</tr>";
+            }
+            return html + "</table></div>";
+        }
+
+        function scrollToBottom() {
+            thread.scrollTop = thread.scrollHeight;
+        }
+
+        // --- 3. Rendering an answer ---
+        function linkCitations(answer, citations, prefix) {
+            // Turn [E1] or [E1, E6] into clickable pills, but only for citations the server validated
+            const valid = new Set(citations.map(c => c.id));
+            return esc(answer).replace(/\[(E\d+(?:\s*,\s*E\d+)*)\]/g, (match, ids) =>
+                ids.split(/\s*,\s*/).map(id => valid.has(id)
+                    ? `<button class="cite" data-action="cite" data-target="${prefix}-${id}">${id}</button>`
+                    : `[${id}]`).join(""));
+        }
+
+        function renderSources(ev, prefix) {
+            const meta = item => `${item.id} · ${docName(item.doc)} · p.${item.page}` +
+                (item.score ? ` · score ${Number(item.score).toFixed(2)}` : "");
+            const panels = {
+                texts: ev.texts.map(t => `<div class="ev" id="${prefix}-${t.id}">
+                    <div class="ev-meta">${meta(t)}</div><div class="ev-text">${esc(t.text)}</div></div>`).join(""),
+                tables: ev.tables.map(t => `<div class="ev" id="${prefix}-${t.id}">
+                    <div class="ev-meta">${meta(t)}</div>${markdownTableToHtml(t.markdown)}</div>`).join(""),
+                images: ev.images.length ? `<div class="image-grid">` + ev.images.map(img =>
+                    `<button class="thumb" id="${prefix}-${img.id}" data-action="zoom" data-url="${esc(img.url)}">
+                    <img src="${esc(img.url)}" loading="lazy" alt="${esc(img.caption || "Figure from " + img.doc)}">
+                    <div>${meta(img)}</div></button>`).join("") + `</div>` : "",
+            };
+            const names = { texts: "Text", tables: "Tables", images: "Images" };
+            const first = Object.keys(panels).find(k => ev[k].length) || "texts";
+
+            let tabs = "", bodies = "";
+            for (const key of Object.keys(panels)) {
+                const active = key === first ? " active" : "";
+                tabs += `<button class="tab${active}" data-action="tab" data-target="${prefix}-${key}">${names[key]} ${ev[key].length}</button>`;
+                bodies += `<div class="tab-panel${active}" id="${prefix}-${key}">${panels[key] || `<div class="ev-empty">None retrieved.</div>`}</div>`;
+            }
+            return `<div class="sources" id="${prefix}-sources" hidden><div class="tabs">${tabs}</div>${bodies}</div>`;
+        }
+
+        function renderAnswer(res, prefix) {
+            if (!res.ok) return `<div class="error">${esc(res.error)}</div>`;
+            const data = res.data;
+            const total = data.evidence.texts.length + data.evidence.tables.length + data.evidence.images.length;
+
+            let html = "";
+            if (!data.answer_found) html += `<div class="notice">Not found in the documents</div>`;
+            html += `<p class="answer-text">${linkCitations(data.answer, data.citations, prefix)}</p>`;
+            if (data.citations.length) {
+                html += `<div class="source-chips">` + data.citations.map(c =>
+                    `<button class="source-chip" data-action="cite" data-target="${prefix}-${c.id}">${docName(c.doc)} · p.${c.page} · ${esc(c.type)}</button>`).join("") + `</div>`;
+            }
+            html += `<div class="meta">`;
+            if (total) html += `<button class="sources-btn" data-action="sources" data-target="${prefix}-sources">${total} sources</button>`;
+            html += `<span>${MODE_LABELS[data.mode]}</span>`;
+            if (data.latency_ms) html += `<span>${(data.latency_ms / 1000).toFixed(1)} s</span>`;
+            html += `</div>`;
+            return html + renderSources(data.evidence, prefix);
+        }
+
+        // --- 4. Talking to the server ---
+        async function ask(question, mode) {
+            try {
+                const response = await fetch("/api/ask", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question, mode }),
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    const detail = typeof data.detail === "string" ? data.detail : "The question could not be processed.";
+                    return { ok: false, error: detail };
+                }
+                return { ok: true, data };
+            } catch (e) {
+                return { ok: false, error: "Could not reach the server. Check that it is running and try again." };
+            }
+        }
+
+        function addMessage(className, html) {
+            const el = document.createElement("div");
+            el.className = "msg " + className;
+            el.innerHTML = html;
+            column.appendChild(el);
+            return el;
+        }
+
+        async function send(question) {
+            question = question.trim();
+            if (!question || busy) return;
+            busy = true;
+            sendBtn.disabled = true;
+            input.value = "";
+            input.style.height = "auto";
+            empty.hidden = true;
+
+            const mode = currentMode;
+            const prefix = "m" + (++messageCount);
+            column.classList.toggle("wide", mode === "compare");
+            addMessage("user", `<div class="bubble">${esc(question)}</div>`);
+            const bot = addMessage("bot", `<div class="avatar"><svg class="star"><use href="#star"/></svg></div>
+                <div class="bot-body"><div class="typing"><i></i><i></i><i></i></div></div>`);
+            scrollToBottom();
+
+            const body = bot.querySelector(".bot-body");
+            if (mode === "compare") {
+                // Same question through the baseline and the proposed system, side by side
+                const [textRes, multiRes] = await Promise.all([ask(question, "text"), ask(question, "multimodal")]);
+                body.innerHTML = `<div class="compare">
+                    <div class="compare-col"><h3>Text only</h3>${renderAnswer(textRes, prefix + "a")}</div>
+                    <div class="compare-col"><h3>Multimodal</h3>${renderAnswer(multiRes, prefix + "b")}</div></div>`;
+            } else {
+                body.innerHTML = renderAnswer(await ask(question, mode), prefix);
+            }
+
+            busy = false;
+            sendBtn.disabled = false;
+            bot.scrollIntoView({ behavior: "smooth", block: "start" });
+            input.focus();
+        }
+
+        // --- 5. Sources panel interactions ---
+        function showPanel(panel) {
+            const box = panel.closest(".sources");
+            box.hidden = false;
+            box.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p === panel));
+            box.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.target === panel.id));
+        }
+
+        function jumpToEvidence(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            showPanel(el.closest(".tab-panel"));
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("flash");
+            setTimeout(() => el.classList.remove("flash"), 1500);
+        }
+
+        // One click handler for everything inside the conversation
+        column.addEventListener("click", e => {
+            const example = e.target.closest(".example");
+            if (example) return send(example.dataset.q);
+
+            const el = e.target.closest("[data-action]");
+            if (!el) return;
+            const action = el.dataset.action;
+            if (action === "cite") jumpToEvidence(el.dataset.target);
+            if (action === "tab") showPanel(document.getElementById(el.dataset.target));
+            if (action === "sources") {
+                const box = document.getElementById(el.dataset.target);
+                box.hidden = !box.hidden;
+            }
+            if (action === "zoom") {
+                document.getElementById("lightbox-img").src = el.dataset.url;
+                lightbox.classList.add("open");
+            }
+        });
+
+        // --- 6. Composer, sidebar and lightbox ---
+        sendBtn.addEventListener("click", () => send(input.value));
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send(input.value);
+            }
+        });
+        input.addEventListener("input", () => {
+            input.style.height = "auto";
+            input.style.height = input.scrollHeight + "px";
+        });
+
+        document.getElementById("modes").addEventListener("click", e => {
+            const btn = e.target.closest(".mode");
+            if (!btn) return;
+            currentMode = btn.dataset.mode;
+            document.querySelectorAll(".mode").forEach(m => m.classList.toggle("active", m === btn));
+        });
+
+        document.getElementById("new-chat").addEventListener("click", () => {
+            if (busy) return;
+            column.querySelectorAll(".msg").forEach(m => m.remove());
+            column.classList.remove("wide");
+            empty.hidden = false;
+            app.classList.remove("drawer-open");
+            input.focus();
+        });
+
+        document.getElementById("menu-btn").addEventListener("click", () => app.classList.add("drawer-open"));
+        document.getElementById("scrim").addEventListener("click", () => app.classList.remove("drawer-open"));
+
+        function closeLightbox() {
+            lightbox.classList.remove("open");
+            document.getElementById("lightbox-img").removeAttribute("src");
+        }
+        lightbox.addEventListener("click", e => { if (e.target.id !== "lightbox-img") closeLightbox(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
+        // --- 7. Load the document list ---
+        fetch("/api/docs")
             .then(r => r.json())
             .then(data => {
-                const row = document.getElementById('corpus-chips');
-                if (data.docs) {
-                    data.docs.forEach(doc => {
-                        const d = document.createElement('div');
-                        d.className = 'chip';
-                        d.textContent = doc;
-                        row.appendChild(d);
-                    });
-                }
+                document.getElementById("doc-list").innerHTML =
+                    (data.docs || []).map(d => `<li title="${esc(d)}">${docName(d)}</li>`).join("");
             })
-            .catch(e => console.error("Could not load docs", e));
-
-        function fillQ(q) {
-            document.getElementById('question-input').value = q;
-            document.getElementById('ask-btn').click();
-        }
-
-        document.getElementById('question-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                document.getElementById('ask-btn').click();
-            }
-        });
-
-        function parseMarkdownTable(md) {
-            if (!md) return "";
-            let rows = md.trim().split("\n");
-            let html = "<table class='md-table'>";
-            let isHeader = true;
-            for (let r of rows) {
-                if (r.indexOf("---") > -1) { isHeader = false; continue; }
-                let cells = r.split("|").filter(c => c.trim() !== "");
-                if (cells.length === 0) continue;
-                let tag = isHeader ? "th" : "td";
-                html += "<tr>" + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join("") + "</tr>";
-            }
-            html += "</table>";
-            return html;
-        }
-
-        function formatCitations(text, citations) {
-            if (!text) return "";
-            let out = text;
-            // Highlight citations like [E1], [E2]
-            const regex = /\[(E\d+)\]/g;
-            out = out.replace(regex, (match, eid) => {
-                // Only link if it's in the valid citations list
-                const isValid = citations.some(c => c.id === eid);
-                if (isValid) {
-                    return `<span class="citation-pill" onclick="scrollToEvidence('${eid}')">${eid}</span>`;
-                }
-                return match;
+            .catch(() => {
+                document.getElementById("doc-list").innerHTML = "<li>Could not load the document list</li>";
             });
-            return out;
-        }
-
-        function renderAnswerCard(containerId, data) {
-            const el = document.getElementById(containerId);
-            if (!data.answer_found) {
-                el.innerHTML = `<div class="not-found">Not found in the documents</div><p>${data.answer}</p><div class="latency">Latency: ${data.latency_ms} ms</div>`;
-            } else {
-                let ansHtml = `<p>${formatCitations(data.answer, data.citations)}</p>`;
-                if (data.citations.length > 0) {
-                    ansHtml += `<div>Citations: `;
-                    data.citations.forEach(c => {
-                        ansHtml += `<span class="citation-pill" onclick="scrollToEvidence('${c.id}')">${c.id}</span> `;
-                    });
-                    ansHtml += `</div>`;
-                }
-                ansHtml += `<div class="latency">Latency: ${data.latency_ms} ms</div>`;
-                el.innerHTML = ansHtml;
-            }
-        }
-
-        function renderEvidenceTabs(prefix, ev) {
-            // Texts
-            document.getElementById(`${prefix}-count-texts`).textContent = ev.texts.length;
-            const textDiv = document.getElementById(`${prefix}-tab-texts`);
-            textDiv.innerHTML = ev.texts.map(t => 
-                `<div class="evidence-item" id="ev-${t.id}">
-                    <div class="evidence-meta">[${t.id}] ${t.doc} (Page ${t.page}) — Score: ${t.score}</div>
-                    <div class="evidence-text">${t.text}</div>
-                </div>`
-            ).join('');
-
-            // Tables
-            if (document.getElementById(`${prefix}-count-tables`)) {
-                document.getElementById(`${prefix}-count-tables`).textContent = ev.tables.length;
-                const tabDiv = document.getElementById(`${prefix}-tab-tables`);
-                tabDiv.innerHTML = ev.tables.map(t => 
-                    `<div class="evidence-item" id="ev-${t.id}">
-                        <div class="evidence-meta">[${t.id}] ${t.doc} (Page ${t.page}) — Score: ${t.score}</div>
-                        ${parseMarkdownTable(t.markdown)}
-                    </div>`
-                ).join('');
-            }
-
-            // Images
-            if (document.getElementById(`${prefix}-count-images`)) {
-                document.getElementById(`${prefix}-count-images`).textContent = ev.images.length;
-                const imgDiv = document.getElementById(`${prefix}-image-grid`);
-                imgDiv.innerHTML = ev.images.map(img => 
-                    `<div class="image-thumb" id="ev-${img.id}" onclick="openLightbox('${img.url}')">
-                        <img src="${img.url}" loading="lazy">
-                        <div class="label">[${img.id}] p.${img.page}</div>
-                    </div>`
-                ).join('');
-            }
-        }
-
-        function switchTab(prefix, tabName) {
-            const section = document.getElementById(`${prefix}-tab-${tabName}`).parentElement;
-            // Remove active from tabs
-            section.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            // Remove active from content
-            section.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            // Add active to clicked tab
-            event.currentTarget.classList.add('active');
-            document.getElementById(`${prefix}-tab-${tabName}`).classList.add('active');
-        }
-
-        function scrollToEvidence(eid) {
-            const el = document.getElementById(`ev-${eid}`);
-            if (el) {
-                // If it's in a hidden tab, we need to show the tab first.
-                // Find parent tab-content
-                const tabContent = el.closest('.tab-content');
-                if (tabContent && !tabContent.classList.contains('active')) {
-                    const section = tabContent.parentElement;
-                    section.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    section.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    
-                    tabContent.classList.add('active');
-                    // Guess the tab ID based on content ID
-                    const tabId = tabContent.id.split('-').pop(); 
-                    const prefix = tabContent.id.split('-')[0];
-                    // The matching tab header is a bit tricky to find robustly without IDs, 
-                    // we'll just activate the nth tab matching the index of this tab content.
-                    const contents = Array.from(section.querySelectorAll('.tab-content'));
-                    const idx = contents.indexOf(tabContent);
-                    const tabs = section.querySelectorAll('.tab');
-                    if (tabs[idx]) tabs[idx].classList.add('active');
-                }
-                
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('highlighted');
-                setTimeout(() => el.classList.remove('highlighted'), 2000);
-            }
-        }
-
-        function openLightbox(url) {
-            document.getElementById('lightbox-img').src = url;
-            document.getElementById('lightbox').classList.add('active');
-        }
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-            document.getElementById('lightbox-img').src = "";
-        }
-
-        document.getElementById('ask-btn').addEventListener('click', async () => {
-            const q = document.getElementById('question-input').value.trim();
-            if (!q) return;
-            
-            const mode = document.querySelector('input[name="mode"]:checked').value;
-            
-            document.getElementById('results-area').style.display = 'none';
-            document.getElementById('single-response').style.display = 'none';
-            document.getElementById('compare-response').style.display = 'none';
-            document.getElementById('skeleton-loader').classList.add('active');
-            
-            try {
-                if (mode === 'compare') {
-                    // Fetch both in parallel
-                    const [resText, resMulti] = await Promise.all([
-                        fetch('/api/ask', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({question: q, mode: 'text'})
-                        }).then(r => r.json()),
-                        fetch('/api/ask', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({question: q, mode: 'multimodal'})
-                        }).then(r => r.json())
-                    ]);
-                    
-                    document.getElementById('skeleton-loader').classList.remove('active');
-                    document.getElementById('results-area').style.display = 'block';
-                    document.getElementById('compare-response').style.display = 'flex';
-                    
-                    if (resText.detail) throw new Error(resText.detail);
-                    if (resMulti.detail) throw new Error(resMulti.detail);
-                    
-                    renderAnswerCard('compare-text-answer', resText);
-                    renderEvidenceTabs('c1', resText.evidence);
-                    
-                    renderAnswerCard('compare-multi-answer', resMulti);
-                    renderEvidenceTabs('c2', resMulti.evidence);
-                    
-                } else {
-                    const r = await fetch('/api/ask', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({question: q, mode: mode})
-                    });
-                    const res = await r.json();
-                    
-                    document.getElementById('skeleton-loader').classList.remove('active');
-                    if (!r.ok) {
-                        document.getElementById('results-area').style.display = 'block';
-                        document.getElementById('single-response').style.display = 'block';
-                        document.getElementById('single-answer-content').innerHTML = `<div class="error-message">${res.detail || "Server error"}</div>`;
-                        return;
-                    }
-                    
-                    document.getElementById('results-area').style.display = 'block';
-                    document.getElementById('single-response').style.display = 'block';
-                    
-                    renderAnswerCard('single-answer-content', res);
-                    renderEvidenceTabs('single', res.evidence);
-                }
-            } catch (e) {
-                document.getElementById('skeleton-loader').classList.remove('active');
-                alert("An error occurred: " + e.message);
-            }
-        });
     </script>
 </body>
 </html>

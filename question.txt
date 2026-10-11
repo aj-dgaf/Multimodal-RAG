@@ -1,0 +1,53 @@
+DEMO QUESTIONS FOR THE MULTIMODAL RAG
+
+All of these come from the evaluation set, so they are cached: they answer
+instantly and use no Gemini quota. Paste them exactly as written, because the
+cache matches on the full question text.
+
+
+BEST FOR COMPARE MODE (text-only fails, multimodal gets it right)
+
+1. What was HDFC Bank's standalone net profit for the quarter ended June 30, 2026?
+2. What was HDFC Bank's standalone gross NPA ratio (percentage of gross NPAs to gross advances) as at June 30, 2026?
+3. In Figure 1.1 (L.S. of a flower), which labelled structure is the swollen base of the pistil at the bottom of the flower?
+4. On the thermostat knob figure, what cooling does the 6-7 / MAX range give and in which season is it used?
+
+
+FIGURE QUESTIONS (use Multimodal, then open the Images tab)
+
+5. In the illustrated fire drill, what should you do when there is smoke?
+6. In the Tata Motors FY26 highlights (consolidated) infographic, what were revenue from operations and profit after tax in ₹ crore?
+7. In Figure 9.9 (New Cartesian Sign Convention for spherical mirrors), how are heights measured downwards from the principal axis labelled?
+8. What warning is printed next to the defrost illustration in the refrigerator manual?
+
+
+TABLE QUESTIONS (correct in every mode)
+
+9. What are the engine displacement and fuel tank capacity of the Hero Maestro Edge according to its specification table?
+10. What engine oil capacity (with oil filter replacement) and oil viscosity does the Celerio specification list?
+11. According to Table 9.3, which material medium has a refractive index of 1.63?
+12. What were HDFC Bank's consolidated deposits as at June 30, 2026, according to the consolidated statement of assets and liabilities?
+
+
+PLAIN TEXT QUESTIONS (correct in every mode)
+
+13. State the two laws of reflection of light.
+14. What does the androecium of a flower consist of, and what does it represent?
+15. What final dividend per share did the Board of Hindustan Unilever propose for FY2026?
+16. After a sudden power failure, how long does the refrigerator take to start running again?
+
+
+"NOT FOUND" QUESTIONS (shows it refuses instead of guessing)
+
+17. State Newton's second law of motion.
+18. What is the ex-showroom price of the Maruti Suzuki Celerio?
+19. What interest rate does HDFC Bank charge on a home loan?
+
+
+QUESTIONS TO AVOID IN THE DEMO (failed in every mode)
+
+- In the illustration of heights in the Measures of Central Tendency chapter that explains the mean, what mean height is shown?
+- In the height illustration for the median, what is the median height shown?
+- In the height illustration for the mode, what mode value is shown?
+- What turnover did Hindustan Unilever report for FY2026, and by how much did it grow?
+- According to Infosys's key trends table, what were consolidated revenues in FY 2026 in ₹ crore and in US$ million?

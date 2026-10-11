@@ -1,1 +1,282 @@
-[]
+[
+  {
+    "id": "q01",
+    "question": "According to Aasha's brother, what is a green school?",
+    "type": "text",
+    "gold_answer": "A school where we manage our waste, save water, use electricity carefully, and make the campus green by planting more trees and taking care of them.",
+    "gold_doc": "eeev104.pdf",
+    "gold_page": 1
+  },
+  {
+    "id": "q02",
+    "question": "State the two laws of reflection of light.",
+    "type": "text",
+    "gold_answer": "(i) The angle of incidence equals the angle of reflection. (ii) The incident ray, the normal at the point of incidence and the reflected ray all lie in the same plane.",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 2
+  },
+  {
+    "id": "q03",
+    "question": "What is the relationship between the radius of curvature and the focal length of a spherical mirror of small aperture?",
+    "type": "text",
+    "gold_answer": "The radius of curvature is twice the focal length (R = 2f), so the principal focus lies midway between the pole and the centre of curvature.",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 4
+  },
+  {
+    "id": "q04",
+    "question": "What two interesting properties of the arithmetic mean does the Statistics for Economics chapter describe?",
+    "type": "text",
+    "gold_answer": "The sum of deviations of items about the arithmetic mean is always zero, and the arithmetic mean is affected by extreme values.",
+    "gold_doc": "kest105.pdf",
+    "gold_page": 6
+  },
+  {
+    "id": "q05",
+    "question": "What is the minimum ambient room temperature recommended where the refrigerator is installed?",
+    "type": "text",
+    "gold_answer": "At least 10°C; operating the refrigerator below 10°C is not recommended.",
+    "gold_doc": "RDC215DBWRX.pdf",
+    "gold_page": 11
+  },
+  {
+    "id": "q06",
+    "question": "After a sudden power failure, how long does the refrigerator take to start running again?",
+    "type": "text",
+    "gold_answer": "Approximately 6 minutes; call service if it does not start after that period.",
+    "gold_doc": "RDC215DBWRX.pdf",
+    "gold_page": 15
+  },
+  {
+    "id": "q07",
+    "question": "What does the androecium of a flower consist of, and what does it represent?",
+    "type": "text",
+    "gold_answer": "A whorl of stamens, representing the male reproductive organ.",
+    "gold_doc": "lebo101.pdf",
+    "gold_page": 4
+  },
+  {
+    "id": "q08",
+    "question": "What turnover did Hindustan Unilever report for FY2026, and by how much did it grow?",
+    "type": "text",
+    "gold_answer": "A turnover of ₹63,763 crores, growing 5% with 4% Underlying Volume Growth.",
+    "gold_doc": "annual-report-2025-26.pdf",
+    "gold_page": 10
+  },
+  {
+    "id": "q09",
+    "question": "What final dividend per share did the Board of Hindustan Unilever propose for FY2026?",
+    "type": "text",
+    "gold_answer": "A final dividend of ₹22 per share (in addition to the interim dividend of ₹19 per share declared in October 2025).",
+    "gold_doc": "annual-report-2025-26.pdf",
+    "gold_page": 10
+  },
+  {
+    "id": "q10",
+    "question": "In the Celerio, which functions will not work when the ESP warning light indicates a problem in the ESP system?",
+    "type": "text",
+    "gold_answer": "The traction control system, the stability control system and the ENG A-STOP system (if equipped) will not work; ABS will still work.",
+    "gold_doc": "CELERIO_Owners-Manual.pdf",
+    "gold_page": 144
+  },
+  {
+    "id": "q11",
+    "question": "What was HDFC Bank's standalone net profit for the quarter ended June 30, 2026?",
+    "type": "table",
+    "gold_answer": "₹19,059.72 crore.",
+    "gold_doc": "financial-results-for-the-quarter-ended-june-30-2026.pdf",
+    "gold_page": 1
+  },
+  {
+    "id": "q12",
+    "question": "What was HDFC Bank's standalone gross NPA ratio (percentage of gross NPAs to gross advances) as at June 30, 2026?",
+    "type": "table",
+    "gold_answer": "1.17%.",
+    "gold_doc": "financial-results-for-the-quarter-ended-june-30-2026.pdf",
+    "gold_page": 1
+  },
+  {
+    "id": "q13",
+    "question": "What were HDFC Bank's consolidated deposits as at June 30, 2026, according to the consolidated statement of assets and liabilities?",
+    "type": "table",
+    "gold_answer": "₹31,67,330.55 crore (3167330.55 in the table, in ₹ crore).",
+    "gold_doc": "financial-results-for-the-quarter-ended-june-30-2026.pdf",
+    "gold_page": 10
+  },
+  {
+    "id": "q14",
+    "question": "According to Infosys's key trends table, what were consolidated revenues in FY 2026 in ₹ crore and in US$ million?",
+    "type": "table",
+    "gold_answer": "₹1,78,650 crore and US$20,158 million.",
+    "gold_doc": "infosys-ar-26.pdf",
+    "gold_page": 16
+  },
+  {
+    "id": "q15",
+    "question": "In the discrete series median example, which cumulative frequency corresponds to an income of Rs 30 (Table 5.5)?",
+    "type": "table",
+    "gold_answer": "16 (income Rs 30 has 10 persons and a cumulative frequency of 16, so the median income is Rs 30).",
+    "gold_doc": "kest105.pdf",
+    "gold_page": 9
+  },
+  {
+    "id": "q16",
+    "question": "According to Table 9.1, where is the image formed and what is its nature when the object is placed between C and F of a concave mirror?",
+    "type": "table",
+    "gold_answer": "Beyond C; the image is enlarged, real and inverted.",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 5
+  },
+  {
+    "id": "q17",
+    "question": "According to Table 9.3, which material medium has a refractive index of 1.63?",
+    "type": "table",
+    "gold_answer": "Carbon disulphide.",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 16
+  },
+  {
+    "id": "q18",
+    "question": "What are the engine displacement and fuel tank capacity of the Hero Maestro Edge according to its specification table?",
+    "type": "table",
+    "gold_answer": "Displacement 110.9 cc and a fuel tank of 5.5 litres.",
+    "gold_doc": "maestroedge2.pdf",
+    "gold_page": 6
+  },
+  {
+    "id": "q19",
+    "question": "What engine oil capacity (with oil filter replacement) and oil viscosity does the Celerio specification list?",
+    "type": "table",
+    "gold_answer": "2.8 L (replacement with oil filter); API SN classification, viscosity SAE 0W-16.",
+    "gold_doc": "CELERIO_Owners-Manual.pdf",
+    "gold_page": 279
+  },
+  {
+    "id": "q20",
+    "question": "What does the amber AC adapter and battery light indicate on the HP computer?",
+    "type": "table",
+    "gold_answer": "The AC adapter is connected and the battery is charging.",
+    "gold_doc": "c05633409.pdf",
+    "gold_page": 16
+  },
+  {
+    "id": "q21",
+    "question": "In the illustration of heights in the Measures of Central Tendency chapter that explains the mean, what mean height is shown?",
+    "type": "figure",
+    "gold_answer": "59 inches (531 divided by 9).",
+    "gold_doc": "kest105.pdf",
+    "gold_page": 3
+  },
+  {
+    "id": "q22",
+    "question": "In the height illustration for the median, what is the median height shown?",
+    "type": "figure",
+    "gold_answer": "62 inches.",
+    "gold_doc": "kest105.pdf",
+    "gold_page": 9
+  },
+  {
+    "id": "q23",
+    "question": "In the height illustration for the mode, what mode value is shown?",
+    "type": "figure",
+    "gold_answer": "67 inches.",
+    "gold_doc": "kest105.pdf",
+    "gold_page": 13
+  },
+  {
+    "id": "q24",
+    "question": "In Figure 9.9 (New Cartesian Sign Convention for spherical mirrors), how are heights measured downwards from the principal axis labelled?",
+    "type": "figure",
+    "gold_answer": "Height downwards is negative (–ve).",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 10
+  },
+  {
+    "id": "q25",
+    "question": "In Figure 9.10 (refraction through a rectangular glass slab), how does the emergent ray compare with the incident ray?",
+    "type": "figure",
+    "gold_answer": "The emergent ray is parallel to the incident ray, but shifted sideways slightly.",
+    "gold_doc": "jesc109.pdf",
+    "gold_page": 14
+  },
+  {
+    "id": "q26",
+    "question": "What warning is printed next to the defrost illustration in the refrigerator manual?",
+    "type": "figure",
+    "gold_answer": "DO NOT USE SHARP OBJECT TO REMOVE ICE.",
+    "gold_doc": "RDC215DBWRX.pdf",
+    "gold_page": 12
+  },
+  {
+    "id": "q27",
+    "question": "On the thermostat knob figure, what cooling does the 6-7 / MAX range give and in which season is it used?",
+    "type": "figure",
+    "gold_answer": "6-7 / MAX gives more cooling and is used in summer.",
+    "gold_doc": "RDC215DBWRX.pdf",
+    "gold_page": 12
+  },
+  {
+    "id": "q28",
+    "question": "In Figure 1.1 (L.S. of a flower), which labelled structure is the swollen base of the pistil at the bottom of the flower?",
+    "type": "figure",
+    "gold_answer": "The ovary.",
+    "gold_doc": "lebo101.pdf",
+    "gold_page": 4
+  },
+  {
+    "id": "q29",
+    "question": "In the illustrated fire drill, what should you do when there is smoke?",
+    "type": "figure",
+    "gold_answer": "Crawl low under the smoke with your mouth covered to breathe cleaner air.",
+    "gold_doc": "eeev104.pdf",
+    "gold_page": 15
+  },
+  {
+    "id": "q30",
+    "question": "In the Tata Motors FY26 highlights (consolidated) infographic, what were revenue from operations and profit after tax in ₹ crore?",
+    "type": "figure",
+    "gold_answer": "Revenue from operations ₹83,855 crore and profit after tax ₹3,030 crore.",
+    "gold_doc": "AnnualReportFY26.pdf",
+    "gold_page": 5
+  },
+  {
+    "id": "q31",
+    "question": "What is the ex-showroom price of the Maruti Suzuki Celerio?",
+    "type": "unanswerable",
+    "gold_answer": null,
+    "gold_doc": null,
+    "gold_page": null
+  },
+  {
+    "id": "q32",
+    "question": "What is the function of mitochondria in a cell?",
+    "type": "unanswerable",
+    "gold_answer": null,
+    "gold_doc": null,
+    "gold_page": null
+  },
+  {
+    "id": "q33",
+    "question": "State Newton's second law of motion.",
+    "type": "unanswerable",
+    "gold_answer": null,
+    "gold_doc": null,
+    "gold_page": null
+  },
+  {
+    "id": "q34",
+    "question": "What interest rate does HDFC Bank charge on a home loan?",
+    "type": "unanswerable",
+    "gold_answer": null,
+    "gold_doc": null,
+    "gold_page": null
+  },
+  {
+    "id": "q35",
+    "question": "What is the minimum age to open a savings account at HDFC Bank?",
+    "type": "unanswerable",
+    "gold_answer": null,
+    "gold_doc": null,
+    "gold_page": null
+  }
+]

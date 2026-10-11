@@ -1,0 +1,905 @@
+{
+  "text": {
+    "answerable": [
+      {
+        "id": "q01",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1506
+      },
+      {
+        "id": "q02",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1181
+      },
+      {
+        "id": "q03",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1268
+      },
+      {
+        "id": "q04",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1162
+      },
+      {
+        "id": "q05",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1338
+      },
+      {
+        "id": "q06",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1274
+      },
+      {
+        "id": "q07",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1542
+      },
+      {
+        "id": "q08",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1092
+      },
+      {
+        "id": "q09",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 936
+      },
+      {
+        "id": "q10",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1197
+      },
+      {
+        "id": "q11",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1553
+      },
+      {
+        "id": "q12",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1376
+      },
+      {
+        "id": "q13",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1952
+      },
+      {
+        "id": "q14",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 5440
+      },
+      {
+        "id": "q15",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1713
+      },
+      {
+        "id": "q16",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1349
+      },
+      {
+        "id": "q17",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1106
+      },
+      {
+        "id": "q18",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 2859
+      },
+      {
+        "id": "q19",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3620
+      },
+      {
+        "id": "q20",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 5075
+      },
+      {
+        "id": "q21",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 9308
+      },
+      {
+        "id": "q22",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 6372
+      },
+      {
+        "id": "q23",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "WRONG",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3817
+      },
+      {
+        "id": "q24",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1143
+      },
+      {
+        "id": "q25",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1057
+      },
+      {
+        "id": "q26",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1834
+      },
+      {
+        "id": "q27",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1675
+      },
+      {
+        "id": "q28",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1390
+      },
+      {
+        "id": "q29",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1151
+      },
+      {
+        "id": "q30",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1401
+      }
+    ],
+    "unanswerable": [
+      {
+        "id": "q31",
+        "correct_abstention": true,
+        "latency": 1097
+      },
+      {
+        "id": "q32",
+        "correct_abstention": true,
+        "latency": 1015
+      },
+      {
+        "id": "q33",
+        "correct_abstention": true,
+        "latency": 1239
+      },
+      {
+        "id": "q34",
+        "correct_abstention": true,
+        "latency": 1333
+      },
+      {
+        "id": "q35",
+        "correct_abstention": true,
+        "latency": 1511
+      }
+    ]
+  },
+  "text+tables": {
+    "answerable": [
+      {
+        "id": "q01",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1769
+      },
+      {
+        "id": "q02",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1244
+      },
+      {
+        "id": "q03",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1318
+      },
+      {
+        "id": "q04",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1340
+      },
+      {
+        "id": "q05",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1434
+      },
+      {
+        "id": "q06",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1039
+      },
+      {
+        "id": "q07",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1010
+      },
+      {
+        "id": "q08",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1578
+      },
+      {
+        "id": "q09",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1365
+      },
+      {
+        "id": "q10",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1785
+      },
+      {
+        "id": "q11",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1654
+      },
+      {
+        "id": "q12",
+        "hit": true,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1229
+      },
+      {
+        "id": "q13",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1302
+      },
+      {
+        "id": "q14",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1621
+      },
+      {
+        "id": "q15",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1315
+      },
+      {
+        "id": "q16",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1215
+      },
+      {
+        "id": "q17",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1042
+      },
+      {
+        "id": "q18",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1152
+      },
+      {
+        "id": "q19",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1688
+      },
+      {
+        "id": "q20",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1189
+      },
+      {
+        "id": "q21",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1390
+      },
+      {
+        "id": "q22",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1240
+      },
+      {
+        "id": "q23",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "WRONG",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1217
+      },
+      {
+        "id": "q24",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1258
+      },
+      {
+        "id": "q25",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1674
+      },
+      {
+        "id": "q26",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1255
+      },
+      {
+        "id": "q27",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1291
+      },
+      {
+        "id": "q28",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 1263
+      },
+      {
+        "id": "q29",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1323
+      },
+      {
+        "id": "q30",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 1173
+      }
+    ],
+    "unanswerable": [
+      {
+        "id": "q31",
+        "correct_abstention": true,
+        "latency": 1177
+      },
+      {
+        "id": "q32",
+        "correct_abstention": true,
+        "latency": 1267
+      },
+      {
+        "id": "q33",
+        "correct_abstention": true,
+        "latency": 1376
+      },
+      {
+        "id": "q34",
+        "correct_abstention": true,
+        "latency": 1275
+      },
+      {
+        "id": "q35",
+        "correct_abstention": true,
+        "latency": 1568
+      }
+    ]
+  },
+  "multimodal": {
+    "answerable": [
+      {
+        "id": "q01",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 6677
+      },
+      {
+        "id": "q02",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 6949
+      },
+      {
+        "id": "q03",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 5487
+      },
+      {
+        "id": "q04",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4651
+      },
+      {
+        "id": "q05",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4159
+      },
+      {
+        "id": "q06",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3275
+      },
+      {
+        "id": "q07",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4002
+      },
+      {
+        "id": "q08",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 4730
+      },
+      {
+        "id": "q09",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4727
+      },
+      {
+        "id": "q10",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3762
+      },
+      {
+        "id": "q11",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 0,
+        "relevancy": 1,
+        "latency": 4064
+      },
+      {
+        "id": "q12",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 0,
+        "relevancy": 1,
+        "latency": 4305
+      },
+      {
+        "id": "q13",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4224
+      },
+      {
+        "id": "q14",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 5175
+      },
+      {
+        "id": "q15",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3322
+      },
+      {
+        "id": "q16",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4818
+      },
+      {
+        "id": "q17",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4086
+      },
+      {
+        "id": "q18",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 5357
+      },
+      {
+        "id": "q19",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3409
+      },
+      {
+        "id": "q20",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 2737
+      },
+      {
+        "id": "q21",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 3402
+      },
+      {
+        "id": "q22",
+        "hit": false,
+        "false_abstention": true,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 3299
+      },
+      {
+        "id": "q23",
+        "hit": false,
+        "false_abstention": false,
+        "correctness": "WRONG",
+        "faithfulness": 0,
+        "relevancy": 0,
+        "latency": 3645
+      },
+      {
+        "id": "q24",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3982
+      },
+      {
+        "id": "q25",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "PARTIAL",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3981
+      },
+      {
+        "id": "q26",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 8040
+      },
+      {
+        "id": "q27",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 0,
+        "relevancy": 1,
+        "latency": 5966
+      },
+      {
+        "id": "q28",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4077
+      },
+      {
+        "id": "q29",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 3452
+      },
+      {
+        "id": "q30",
+        "hit": true,
+        "false_abstention": false,
+        "correctness": "CORRECT",
+        "faithfulness": 1,
+        "relevancy": 1,
+        "latency": 4499
+      }
+    ],
+    "unanswerable": [
+      {
+        "id": "q31",
+        "correct_abstention": true,
+        "latency": 6495
+      },
+      {
+        "id": "q32",
+        "correct_abstention": true,
+        "latency": 4537
+      },
+      {
+        "id": "q33",
+        "correct_abstention": true,
+        "latency": 7872
+      },
+      {
+        "id": "q34",
+        "correct_abstention": true,
+        "latency": 6174
+      },
+      {
+        "id": "q35",
+        "correct_abstention": true,
+        "latency": 4294
+      }
+    ]
+  }
+}
